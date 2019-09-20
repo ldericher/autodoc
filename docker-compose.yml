@@ -1,0 +1,15 @@
+version: "2"
+
+volumes:
+  phyLinux-home:
+
+services:
+  autodoc:
+    restart: "no"
+
+    image: ldericher/autodoc
+    build:
+      context: ./build
+
+    volumes:
+      - "${PWD}/example_docs:/docs"
