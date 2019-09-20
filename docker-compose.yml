@@ -12,4 +12,5 @@ services:
       context: ./build
 
     volumes:
+      - "${PWD}/build/autodoc.sh:/usr/local/bin/autodoc:ro"
       - "${PWD}/example_docs:/docs"
