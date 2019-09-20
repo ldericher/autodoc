@@ -10,14 +10,18 @@ do_make() { # $1:DIR $2:OBJECT
   local object="$2"
 
   # extract Makefile 'source pattern'
-  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/Makefile" | sed -r "s/^#@SRCPAT\s+//")"
+  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/Makefile" | tail -n 1 | sed -r "s/^#@SRCPAT\s+//")"
 
   if [ -z "${srcpat}" ]; then
     echo "Empty source pattern! Makefile needs '#@SRCPAT' annotation!"
 
   elif [[ "${object}" =~ ${srcpat} ]]; then
-    echo "SRCPAT OK."
-    make --no-print-directory -C "${dir}" -j
+    # check for autodoc target
+    local target="$(grep -E "^autodoc:" "${dir}/Makefile" | sed -r "s/:.*$//")"
+    local target="${target:-all}"
+
+    echo "SRCPAT OK, building '${target}'."
+    make --no-print-directory -C "${dir}" -j "${target}"
 
   else
     echo "SRCPAT mismatch '${srcpat}'."
