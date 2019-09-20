@@ -4,27 +4,28 @@
 g_watchroot="$(readlink -f "${1:-.}")"
 
 # compile using bare make command
-do_make() { # $1:DIR $2:OBJECT
+do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   # extract params
   local dir="$1"
-  local object="$2"
+  local makefile="$2"
+  local object="$3"
 
   # extract Makefile 'source pattern'
-  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/Makefile" | tail -n 1 | sed -r "s/^#@SRCPAT\s+//")"
+  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#@SRCPAT\s+//")"
 
   if [ -z "${srcpat}" ]; then
-    echo "Empty source pattern! Makefile needs '#@SRCPAT' annotation!"
+    echo "Empty source pattern, check '#@SRCPAT' annotation!"
 
   elif [[ "${object}" =~ ${srcpat} ]]; then
     # check for autodoc target
-    local target="$(grep -E "^autodoc:" "${dir}/Makefile" | sed -r "s/:.*$//")"
-    local target="${target:-all}"
+    local target="$(grep -E "^autodoc:" "${dir}/${makefile}" | sed -r "s/:.*$//")"
+    # local target="${target:-all}" # fallback target: all
 
-    echo "SRCPAT OK, building '${target}'."
-    make --no-print-directory -C "${dir}" -j "${target}"
+    echo "Making '${target}'."
+    make --no-print-directory -C "${dir}" -j ${target}
 
   else
-    echo "SRCPAT mismatch '${srcpat}'."
+    echo "SRCPAT '${srcpat}' mismatch."
   fi
 }
 
@@ -39,16 +40,15 @@ do_compile() { # $1:DIR $2:OBJECT $3:DONE
 
   if [ -r "${dir}/Makefile" ]; then
     # Makefile found
-    echo -n "Using '${dir}/Makefile'. "
-    do_make "${dir}" "${object}"
+    echo -n "Found '${dir}/Makefile'. "
+    do_make "${dir}" "Makefile" "${object}"
     local done="1"
   fi
 
-  # search parent dir for more build instructions
+  # never leave $g_watchroot
   if [ "${dir}" != "${g_watchroot}" ]; then
-    # never leave $g_watchroot
-    local dir="$(dirname "${dir}")"
-    do_compile "${dir}" "${object}" "${done}"
+    # search parent dir for more build instructions
+    do_compile "$(dirname "${dir}")" "${object}" "${done}"
 
   elif [ "${done}" == "0" ]; then
     # hit $g_watchroot
