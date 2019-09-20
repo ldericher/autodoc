@@ -33,18 +33,20 @@ do_compile() { # $1:DIR $2:OBJECT
   local dir="$1"
   local object="$2"
 
-  # compile using Makefile
   if [ -e "${dir}/Makefile" ]; then
-    echo "Using '${dir}/Makefile'."
+    # compile using Makefile
+    echo "using 'make' in '$(basename "${dir}")'."
     do_make "${dir}" "${object}"
 
-  # compile parent dir if not in g_watchroot
-elif [ "${dir}" != "${g_watchroot}" ]; then
-    do_compile "$(dirname "${dir}")" "${object}"
+  elif [ "${dir}" != "${g_watchroot}" ]; then
+    # search parent dir for build instructions (don't leave g_watchroot)
+    local dir="$(dirname "${dir}")"
+    echo -n "moving up … "
+    do_compile "${dir}" "${object}"
 
-  # stop otherwise
   else
-    echo "No compile description found!"
+    # stop otherwise
+    echo "no build instruction found!"
   fi
 }
 
@@ -56,14 +58,14 @@ do_handle() { # $1:FLAGS $2:OBJECT
   local dir="$(dirname "$*")"
   local object="$(basename "$*")"
 
-  # object refers to directory
   if [[ "${flags}" =~ "ISDIR" ]]; then
+    # object refers to directory
     local dir="${dir}/${object}"
     local object="."
   fi
 
-  # use toolchain
-  echo -n "Flags '${flags}' for '${dir}/${object}' ... "
+  # start using toolchain
+  echo -n "Flags '${flags}' for '${object}' in '${dir}' … "
   do_compile "${dir}" "${object}"
 }
 
@@ -71,7 +73,7 @@ do_handle() { # $1:FLAGS $2:OBJECT
 # MAIN
 #
 
-echo "watching '${g_watchroot}' ..."
+echo "Booting ${0} in '${g_watchroot}'."
 # setup inotify:
 #   -mrq monitor, recursive, quiet
 #   -e events
