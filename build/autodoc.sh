@@ -9,44 +9,46 @@ do_make() { # $1:DIR $2:OBJECT
   local dir="$1"
   local object="$2"
 
-  # enter build directory
-  local olddir="$(pwd)"
-  cd "${dir}"
-
   # extract Makefile 'source pattern'
-  local srcpat="$(grep -E "^#@SRCPAT" Makefile | sed -r "s/^#@SRCPAT\s+//")"
+  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/Makefile" | sed -r "s/^#@SRCPAT\s+//")"
 
   if [ -z "${srcpat}" ]; then
-    echo "Empty source pattern! Make sure Makefile has '#@SRCPAT' annotation!"
-  elif [[ "${object}" =~ ${srcpat} ]]; then
-    make -j # source pattern matched
-  else
-    echo "'${object}' does not match source pattern '${srcpat}'!"
-  fi
+    echo "Empty source pattern! Makefile needs '#@SRCPAT' annotation!"
 
-  cd "${olddir}"
+  elif [[ "${object}" =~ ${srcpat} ]]; then
+    echo "SRCPAT OK."
+    make --no-print-directory -C "${dir}" -j
+
+  else
+    echo "SRCPAT mismatch '${srcpat}'."
+  fi
 }
 
 # compile a directory
-do_compile() { # $1:DIR $2:OBJECT
+do_compile() { # $1:DIR $2:OBJECT $3:DONE
   # extract params
   local dir="$1"
   local object="$2"
+  local done="${3:-0}"
 
-  if [ -e "${dir}/Makefile" ]; then
-    # compile using Makefile
-    echo "using 'make' in '$(basename "${dir}")'."
+  # build systems
+
+  if [ -r "${dir}/Makefile" ]; then
+    # Makefile found
+    echo -n "Using '${dir}/Makefile'. "
     do_make "${dir}" "${object}"
+    local done="1"
+  fi
 
-  elif [ "${dir}" != "${g_watchroot}" ]; then
-    # search parent dir for build instructions (don't leave g_watchroot)
+  # search parent dir for more build instructions
+  if [ "${dir}" != "${g_watchroot}" ]; then
+    # never leave $g_watchroot
     local dir="$(dirname "${dir}")"
-    echo -n "moving up … "
-    do_compile "${dir}" "${object}"
+    do_compile "${dir}" "${object}" "${done}"
 
-  else
-    # stop otherwise
-    echo "no build instruction found!"
+  elif [ "${done}" == "0" ]; then
+    # hit $g_watchroot
+    echo "No build instructions found!"
   fi
 }
 
@@ -65,7 +67,7 @@ do_handle() { # $1:FLAGS $2:OBJECT
   fi
 
   # start using toolchain
-  echo -n "Flags '${flags}' for '${object}' in '${dir}' … "
+  echo -n "'${object}': '${flags}' in '${dir}'. "
   do_compile "${dir}" "${object}"
 }
 
