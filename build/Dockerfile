@@ -7,3 +7,5 @@ RUN apt-get update && apt-get -y install \
 
 COPY autodoc.sh /usr/local/bin/autodoc
 RUN chmod +x /usr/local/bin/autodoc
+
+CMD ["autodoc"]

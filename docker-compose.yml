@@ -11,6 +11,8 @@ services:
     build:
       context: ./build
 
+    command: "bash"
+
     volumes:
       - "${PWD}/build/autodoc.sh:/usr/local/bin/autodoc:ro"
       - "${PWD}/example_docs:/docs"
