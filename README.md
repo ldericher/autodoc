@@ -2,7 +2,7 @@
 
 [`autodoc`](https://github.com/ldericher/autodoc) is a simple [CI](https://en.wikipedia.org/wiki/Continuous_integration) system optimized for document creation.
 
-In general, any file-sharing solution -- preferably on top of `docker-compose` -- can be made into an automatic document distribution system by adding an `autodoc` instance.
+In general, any file-sharing solution – preferably on top of `docker-compose` – can be made into an automatic document distribution system by adding an `autodoc` instance.
 
 ## Quick Start Guide using Docker
 
@@ -16,16 +16,16 @@ The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher
 
     ```bash
     docker run --rm -it \
-     --volume "${PWD}":/docs \
-     --user "$(id -u):$(id -g)" \
-     ldericher/autodoc
+      --volume "${PWD}":/docs \
+      --user "$(id -u):$(id -g)" \
+      ldericher/autodoc
     ```
 
     The contents of the directory are now being watched by `autodoc`!
 
     When deploying an `autodoc` container, just mount your document root to `/docs`. You *should* also set the container's UID and GID. These are seen above.
 
-01. Edit some stuff, save -- and watch the magic happen (and the terminal output).
+01. Edit some stuff, save – and watch the magic happen (and the terminal output).
 
     On each file change, `autodoc` searches relevant build instruction files (Makefiles etc.) and kicks off build processes accordingly.
 
