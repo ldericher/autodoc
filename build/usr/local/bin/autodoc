@@ -13,7 +13,7 @@ declare -a g_plugins
 #
 
 source "${g_lib}/globals"
-source "${g_lib}/plugin_"*
+source "${g_lib}/plugins/"*".sh"
 source "${g_lib}/handle_inotify"
 
 #
