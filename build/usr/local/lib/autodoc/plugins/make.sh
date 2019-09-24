@@ -17,7 +17,7 @@ do_make() { # $DIR $OBJECT $MAKEFILE
   local srcpat="$(grep -E "^#%SRCPAT%" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#%SRCPAT%\s+//")"
 
   if [ -z "${srcpat}" ]; then
-    echo -n "Empty source pattern, check '#%SRCPAT%' annotation! "
+    logline_append "Empty source pattern, check '#%SRCPAT%' annotation!"
     return 1
 
   elif [[ "${object}" =~ ${srcpat} ]]; then
@@ -25,15 +25,19 @@ do_make() { # $DIR $OBJECT $MAKEFILE
     local target="$(grep -E "^autodoc:" "${dir}/${makefile}" | sed -r "s/:.*$//")"
 
     if [ -z "${target}" ]; then
-      echo "Running 'make'. "
+      logline_append "Running 'make'!"
     else
-      echo "Making '${target}'. "
+      logline_append "Making '${target}'!"
     fi
 
-    make --no-print-directory -C "${dir}" -f "${makefile}" -j ${target}
+    # actually run "make" and save (truncated) output
+    local makelog="$(make --no-print-directory -C "${dir}" -f "${makefile}" -j ${target})"
+    logline_append "$(echo "${makelog}" | head -n 10 | sed 's/$/;/g' | tr '\n' ' ' | sed 's/ *$//')"
+
+    logline_append "Done."
 
   else
-    echo -n "SRCPAT '${srcpat}' mismatch. "
+    logline_append "SRCPAT '${srcpat}' mismatch."
     return 1
   fi
 

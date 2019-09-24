@@ -14,6 +14,7 @@ declare -A g_build_systems_glob
 #
 
 source "${g_lib}/globals"
+source "${g_lib}/logging"
 source "${g_lib}/plugins/"*".sh"
 source "${g_lib}/handle_inotify"
 

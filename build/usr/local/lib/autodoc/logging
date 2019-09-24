@@ -1,0 +1,12 @@
+#!/bin/bash
+
+g_logline=""
+
+logline_append() { # $STRING
+  g_logline="${g_logline}${1} "
+}
+
+logline_flush() {
+  echo "${g_logline}"
+  g_logline=""
+}

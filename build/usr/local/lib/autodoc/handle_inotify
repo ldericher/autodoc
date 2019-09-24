@@ -15,8 +15,9 @@ do_handle() { # $FLAGS $OBJECT
   fi
 
   # start using toolchain
-  echo -n "'${object}': '${flags}' in '${dir}'. "
+  logline_append "'${object}': '${flags}' in '${dir}'."
   do_compile "${dir}" "${object}"
+  logline_flush
 }
 
 # compile an OBJECT using build instructions found in DIRectory
@@ -39,7 +40,7 @@ do_compile() { # $DIR $OBJECT $DONE
 
   elif [ "${done}" == "0" ]; then
     # hit $g_watchroot
-    echo "No build instructions found!"
+    logline_append "Not a source file."
   fi
 }
 
@@ -60,10 +61,9 @@ do_build_system() { # $DIR $OBJECT $BUILD_SYSTEM
       # check file readability
       if [ -r "${file}" ]; then
         # actually call into build system
-        echo -n "Found '${file}': "
+        logline_append "Found '${file}':"
         do_${build_system} "${dir}" "${object}" "$(basename "${file}")" \
         && local result=0
-        echo ""
       fi
     done
   done
