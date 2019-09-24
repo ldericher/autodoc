@@ -10,23 +10,31 @@ do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   local makefile="$2"
   local object="$3"
 
-  # extract Makefile 'source pattern'
+  # check Makefile 'source pattern'
   local srcpat="$(grep -E "^#@SRCPAT" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#@SRCPAT\s+//")"
 
   if [ -z "${srcpat}" ]; then
-    echo "Empty source pattern, check '#@SRCPAT' annotation!"
+    echo -n "Empty source pattern, check '#@SRCPAT' annotation! "
+    return 1
 
   elif [[ "${object}" =~ ${srcpat} ]]; then
     # check for autodoc target
     local target="$(grep -E "^autodoc:" "${dir}/${makefile}" | sed -r "s/:.*$//")"
-    # local target="${target:-all}" # fallback target: all
 
-    echo "Making '${target}'."
+    if [ -z "${target}" ]; then
+      echo "Running 'make'. "
+    else
+      echo "Making '${target}'. "
+    fi
+
     make --no-print-directory -C "${dir}" -j ${target}
 
   else
-    echo "SRCPAT '${srcpat}' mismatch."
+    echo -n "SRCPAT '${srcpat}' mismatch. "
+    return 1
   fi
+
+  return 0
 }
 
 # compile a directory
@@ -40,9 +48,9 @@ do_compile() { # $1:DIR $2:OBJECT $3:DONE
 
   if [ -r "${dir}/Makefile" ]; then
     # Makefile found
-    echo -n "Found '${dir}/Makefile'. "
-    do_make "${dir}" "Makefile" "${object}"
-    local done="1"
+    echo -n "Found '${dir}/Makefile': "
+    do_make "${dir}" "Makefile" "${object}" \
+    && local done="1"
   fi
 
   # never leave $g_watchroot
