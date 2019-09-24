@@ -35,9 +35,11 @@ The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher
 
 ### Deploying without Docker
 
-`autodoc` only hard-depends on `inotifywait` from [inotify-tools](https://github.com/rvoicilas/inotify-tools) to recursively watch Linux file system directories.
+`autodoc` hard-depends only on `inotifywait`. Full dependencies are:
 
-You will usually want to install a `LaTeX` distribution and setup `pandoc`.
+* [inotify-tools](https://github.com/rvoicilas/inotify-tools) to recursively watch Linux file system directories
+* [GNU Make](https://www.gnu.org/software/make/) for plugin "make"
+* A `LaTeX` distribution and [`pandoc`](https://pandoc.org/) for plugin "pandoc"
 
 ## Prime use case: Nextcloud
 
