@@ -7,11 +7,11 @@ g_build_systems+=(make)
 g_build_systems_glob[make]="Makefile *.mk"
 
 # compile using bare make command
-do_make() { # $1:MAKEFILE $2:DIR $3:OBJECT
+do_make() { # $DIR $OBJECT $MAKEFILE
   # extract params
-  local makefile="$1"
-  local dir="$2"
-  local object="$3"
+  local dir="$1"
+  local object="$2"
+  local makefile="$3"
 
   # check Makefile 'source pattern'
   local srcpat="$(grep -E "^#%SRCPAT%" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#%SRCPAT%\s+//")"
