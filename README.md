@@ -98,7 +98,7 @@ However, Makefiles must contain a SRCPAT annotation comment as follows, where `<
 
 If there are multiple SRCPAT annotations, the lowermost one will be used.
 
-You *may* add a PHONY target "autodoc" which will be built *instead* of the default target.
+You *may* add a PHONY target "autodoc" which will be built *instead* of the default target. This is demonstrated in [examples/automatic directory listing/a directory in space/Makefile](https://github.com/ldericher/autodoc/blob/develop/examples/automatic%20directory%20listing/a%20directory%20in%20space/Makefile).
 
 ```Makefile
 .PHONY: autodoc
