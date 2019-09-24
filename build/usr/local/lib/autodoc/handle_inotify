@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# process an inotify event
+do_handle() { # $FLAGS $OBJECT
+  # extract params
+  local flags="$1"
+  shift 1
+  local dir="$(dirname "$*")"
+  local object="$(basename "$*")"
+
+  if [[ "${flags}" =~ "ISDIR" ]]; then
+    # object refers to directory
+    local dir="${dir}/${object}"
+    local object="."
+  fi
+
+  # start using toolchain
+  logline_append "'${object}': '${flags}' in '${dir}'."
+  do_compile "${dir}" "${object}"
+  logline_flush
+}
+
+# compile an OBJECT using build instructions found in DIRectory
+do_compile() { # $DIR $OBJECT $DONE
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local done="${3:-0}"
+
+  # build systems
+  for build_system in ${g_build_systems[@]}; do
+    do_build_system "${dir}" "${object}" "${build_system}" \
+    && local done="1"
+  done
+
+  # never leave $g_watchroot
+  if [ "${dir}" != "${g_watchroot}" ]; then
+    # search parent dir for more build instructions
+    do_compile "$(dirname "${dir}")" "${object}" "${done}"
+
+  elif [ "${done}" == "0" ]; then
+    # hit $g_watchroot
+    logline_append "Not a source file."
+  fi
+}
+
+# use given BUILD_SYSTEM to process an OBJECT from a DIRectory
+do_build_system() { # $DIR $OBJECT $BUILD_SYSTEM
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local build_system="$3"
+
+  # not done yet
+  local result=1
+
+  # get glob pattern for plugin
+  for glob in ${g_build_systems_glob[${build_system}]}; do
+    # match glob in directory
+    for file in "${dir}"/${glob}; do
+      # check file readability
+      if [ -r "${file}" ]; then
+        # actually call into build system
+        logline_append "Found '${file}':"
+        do_${build_system} "${dir}" "${object}" "$(basename "${file}")" \
+        && local result=0
+      fi
+    done
+  done
+
+  return ${result}
+}

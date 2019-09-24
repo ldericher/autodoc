@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#
+# hard globals
+#
+
+g_bin="$(readlink -f "$(which "$0")")"
+g_lib=${g_bin/"bin"/"lib"}
+declare -a g_build_systems
+declare -A g_build_systems_glob
+
+#
+# load base program
+#
+
+source "${g_lib}/globals"
+source "${g_lib}/logging"
+source "${g_lib}/plugins/"*".sh"
+source "${g_lib}/handle_inotify"
+
+#
+# MAIN
+#
+
+echo "Booting '${g_bin}' in '${g_watchroot}'."
+# setup inotify:
+#   -mrq monitor, recursive, quiet
+#   -e events
+#   --format %e eventlist csv, %w workdir, %f filename
+inotifywait -mrq \
+  -e create -e delete -e moved_to -e close_write \
+  --format '%e %w%f' \
+  "${g_watchroot}" | \
+\
+while read NOTIFICATION; do
+  do_handle ${NOTIFICATION}
+done

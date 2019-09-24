@@ -1,4 +1,4 @@
-#@SRCPAT \.md$
+#%SRCPAT% \.md$
 
 .PHONY: all
 all: simple.pdf simple.html

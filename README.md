@@ -10,7 +10,7 @@ The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher
 
 01. Install [Docker CE](https://docs.docker.com/install/)
 
-01. Clone or download the `autodoc` repository, open a terminal inside the [example_docs](https://github.com/ldericher/autodoc/tree/master/example_docs) directory
+01. Clone or download the `autodoc` repository, open a terminal inside the [examples](https://github.com/ldericher/autodoc/tree/master/examples) directory
 
 01. Deploy an `autodoc` container:
 
@@ -93,12 +93,12 @@ You may combine build instruction systems to your liking.
 However, Makefiles must contain a SRCPAT annotation comment as follows, where `<regex>` is a source pattern as above.
 
 ```Makefile
-#@SRCPAT <regex>
+#%SRCPAT% <regex>
 ```
 
 If there are multiple SRCPAT annotations, the lowermost one will be used.
 
-You *may* add a PHONY target "autodoc" which will be built *instead* of the default target.
+You *may* add a PHONY target "autodoc" which will be built *instead* of the default target. This is demonstrated in [examples/automatic directory listing/a directory in space/Makefile](https://github.com/ldericher/autodoc/blob/develop/examples/automatic%20directory%20listing/a%20directory%20in%20space/Makefile).
 
 ```Makefile
 .PHONY: autodoc
