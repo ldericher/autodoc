@@ -14,5 +14,5 @@ services:
     command: "bash"
 
     volumes:
-      - "${PWD}/example_docs:/docs"
       - "${PWD}/build/autodoc:/usr/local/bin/autodoc:ro"
+      - "${PWD}/examples:/docs"

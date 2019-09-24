@@ -10,7 +10,7 @@ The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher
 
 01. Install [Docker CE](https://docs.docker.com/install/)
 
-01. Clone or download the `autodoc` repository, open a terminal inside the [example_docs](https://github.com/ldericher/autodoc/tree/master/example_docs) directory
+01. Clone or download the `autodoc` repository, open a terminal inside the [examples](https://github.com/ldericher/autodoc/tree/master/examples) directory
 
 01. Deploy an `autodoc` container:
 
