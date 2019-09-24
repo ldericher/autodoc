@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# compile a directory
+do_compile() { # $1:DIR $2:OBJECT $3:DONE
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local done="${3:-0}"
+
+  # build systems
+  if [ -r "${dir}/Makefile" ]; then
+    # Makefile found
+    echo -n "Found '${dir}/Makefile': "
+    do_make "${dir}" "Makefile" "${object}" \
+    && local done="1"
+  fi
+
+  # never leave $g_watchroot
+  if [ "${dir}" != "${g_watchroot}" ]; then
+    # search parent dir for more build instructions
+    do_compile "$(dirname "${dir}")" "${object}" "${done}"
+
+  elif [ "${done}" == "0" ]; then
+    # hit $g_watchroot
+    echo "No build instructions found!"
+  fi
+}
+
+# process an inotify event
+do_handle() { # $1:FLAGS $2:OBJECT
+  # extract params
+  local flags="$1"
+  shift 1
+  local dir="$(dirname "$*")"
+  local object="$(basename "$*")"
+
+  if [[ "${flags}" =~ "ISDIR" ]]; then
+    # object refers to directory
+    local dir="${dir}/${object}"
+    local object="."
+  fi
+
+  # start using toolchain
+  echo -n "'${object}': '${flags}' in '${dir}'. "
+  do_compile "${dir}" "${object}"
+}
