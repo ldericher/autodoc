@@ -1,5 +1,7 @@
 #!/bin/bash
 
+g_plugins+=(make)
+
 # compile using bare make command
 do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   # extract params
@@ -24,7 +26,7 @@ do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
       echo "Making '${target}'. "
     fi
 
-    make --no-print-directory -C "${dir}" -j ${target}
+    make --no-print-directory -C "${dir}" -f "${makefile}" -j ${target}
 
   else
     echo -n "SRCPAT '${srcpat}' mismatch. "
@@ -32,4 +34,22 @@ do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   fi
 
   return 0
+}
+
+try_make() { # $1:DIR $2:OBJECT
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local retval=1
+
+  for FILE in "${dir}"/Makefile "${dir}"/*.mk; do
+    if [ -r "${FILE}" ]; then
+      echo -n "Found '${FILE}': "
+      do_make "${dir}" "$(basename "${FILE}")" "${object}" \
+      && local retval=0
+      echo ""
+    fi
+  done
+
+  return ${retval}
 }

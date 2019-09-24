@@ -6,6 +6,7 @@
 
 g_bin="$(readlink -f "$(which "$0")")"
 g_lib=${g_bin/"bin"/"lib"}
+declare -a g_plugins
 
 #
 # load base program

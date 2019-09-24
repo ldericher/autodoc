@@ -7,13 +7,11 @@ do_compile() { # $1:DIR $2:OBJECT $3:DONE
   local object="$2"
   local done="${3:-0}"
 
-  # build systems
-  if [ -r "${dir}/Makefile" ]; then
-    # Makefile found
-    echo -n "Found '${dir}/Makefile': "
-    do_make "${dir}" "Makefile" "${object}" \
+  # build plugins
+  for plugin in ${g_plugins[@]}; do
+    try_${plugin} "${dir}" "${object}" \
     && local done="1"
-  fi
+  done
 
   # never leave $g_watchroot
   if [ "${dir}" != "${g_watchroot}" ]; then
