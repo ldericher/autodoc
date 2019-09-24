@@ -7,9 +7,9 @@ do_compile() { # $1:DIR $2:OBJECT $3:DONE
   local object="$2"
   local done="${3:-0}"
 
-  # build plugins
-  for plugin in ${g_plugins[@]}; do
-    try_${plugin} "${dir}" "${object}" \
+  # build systems
+  for build_system in ${g_build_systems[@]}; do
+    try_${build_system} "${dir}" "${object}" \
     && local done="1"
   done
 

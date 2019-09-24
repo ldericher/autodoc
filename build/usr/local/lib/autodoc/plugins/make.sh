@@ -1,6 +1,6 @@
 #!/bin/bash
 
-g_plugins+=(make)
+g_build_systems+=(make)
 
 # compile using bare make command
 do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
