@@ -2,30 +2,42 @@
 
 [`autodoc`](https://github.com/ldericher/autodoc) is a simple [CI](https://en.wikipedia.org/wiki/Continuous_integration) system optimized for document creation.
 
-## Quick Start Guide
+In general, any file-sharing solution -- preferably on top of `docker-compose` -- can be made into an automatic document distribution system by adding an `autodoc` instance.
 
-1. Install [Docker CE](https://docs.docker.com/install/)
+## Quick Start Guide using Docker
 
-1. Clone or download the `autodoc` repository, open a terminal inside the [example_docs](https://github.com/ldericher/autodoc/tree/master/example_docs) directory
+The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher/autodoc) is based on [pandocker](https://hub.docker.com/r/ldericher/pandocker) providing Ubuntu's TeXlive `LaTeX` and `pandoc` in a simple box.
 
-1. Deploy an `autodoc` container:
-   ```bash
-   docker run --rm -it \
-     --name autodoc \
+01. Install [Docker CE](https://docs.docker.com/install/)
+
+01. Clone or download the `autodoc` repository, open a terminal inside the [example_docs](https://github.com/ldericher/autodoc/tree/master/example_docs) directory
+
+01. Deploy an `autodoc` container:
+
+    ```bash
+    docker run --rm -it \
      --volume "${PWD}":/docs \
      --user "$(id -u):$(id -g)" \
      ldericher/autodoc
-   ```
+    ```
 
-   The contents of the directory are now being watched by `autodoc`!
+    The contents of the directory are now being watched by `autodoc`!
 
-   When deploying an `autodoc` container, mount your document root to `/docs`. You *should* also set the container's UID and GID.
+    When deploying an `autodoc` container, just mount your document root to `/docs`. You *should* also set the container's UID and GID. These are seen above.
 
-1. Edit some stuff, save, then watch the magic (and the terminal output)
+01. Edit some stuff, save -- and watch the magic happen (and the terminal output).
 
-## Where not to use `autodoc`
+    On each file change, `autodoc` searches relevant build instruction files (Makefiles etc.) and kicks off build processes accordingly.
+
+### How *not* to use `autodoc`
 
 `autodoc` is **not** a solution for Continuous Integration of large scale systems software! `autodoc` excels at building a large number of independent, small files.
+
+### Deploying without Docker
+
+`autodoc` only hard-depends on `inotifywait` from [inotify-tools](https://github.com/rvoicilas/inotify-tools) to recursively watch Linux file system directories.
+
+You will usually want to install a `LaTeX` distribution and setup `pandoc`.
 
 ## Prime use case: Nextcloud
 
@@ -54,14 +66,8 @@ services:
 The "user" key should be set to the same numeric IDs used for the nextcloud worker processes! To find the right IDs, issue `docker-compose exec app sh -c 'id -u www-data; id -g www-data'`.  
 For the apache containers, this should evaluate to "33:33".
 
-To begin, add the mounted `/opt/autodoc` as a local external storage to your Nextcloud instance.  
+To begin, add the mounted `/opt/autodoc` as a 'local type' external storage to your Nextcloud instance.  
 You might need to setup the permissions on your new volume using `docker-compose exec app chown -R www-data:www-data /opt/autodoc`.
-
-## Basic functionality
-
-`autodoc` uses `inotifywait` from [inotify-tools](https://github.com/rvoicilas/inotify-tools) to recursively watch a Linux file system directory.
-
-For each file change, `autodoc` searches relevant build instruction files (Makefiles etc.) and kicks off build processes accordingly.
 
 ## Concept: Source patterns
 
@@ -83,8 +89,8 @@ You may combine build instruction systems to your liking.
 
 ### GNU Make (Makefiles)
 
-`autodoc` supports standard Makefiles.  
-`Makefile`s must contain a SRCPAT annotation comment as follows, where `<regex>` is the source pattern as above.
+`autodoc` supports GNU Makefiles.  
+However, Makefiles must contain a SRCPAT annotation comment as follows, where `<regex>` is a source pattern as above.
 
 ```Makefile
 #@SRCPAT <regex>
@@ -92,9 +98,7 @@ You may combine build instruction systems to your liking.
 
 If there are multiple SRCPAT annotations, the lowermost one will be used.
 
-##### Advanced Make options
-
-You may add a PHONY target "autodoc" which will be built *instead* of the default target.
+You *may* add a PHONY target "autodoc" which will be built *instead* of the default target.
 
 ```Makefile
 .PHONY: autodoc
