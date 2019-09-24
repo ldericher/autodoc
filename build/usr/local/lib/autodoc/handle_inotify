@@ -1,29 +1,5 @@
 #!/bin/bash
 
-# compile a directory
-do_compile() { # $1:DIR $2:OBJECT $3:DONE
-  # extract params
-  local dir="$1"
-  local object="$2"
-  local done="${3:-0}"
-
-  # build systems
-  for build_system in ${g_build_systems[@]}; do
-    try_${build_system} "${dir}" "${object}" \
-    && local done="1"
-  done
-
-  # never leave $g_watchroot
-  if [ "${dir}" != "${g_watchroot}" ]; then
-    # search parent dir for more build instructions
-    do_compile "$(dirname "${dir}")" "${object}" "${done}"
-
-  elif [ "${done}" == "0" ]; then
-    # hit $g_watchroot
-    echo "No build instructions found!"
-  fi
-}
-
 # process an inotify event
 do_handle() { # $1:FLAGS $2:OBJECT
   # extract params
@@ -41,4 +17,56 @@ do_handle() { # $1:FLAGS $2:OBJECT
   # start using toolchain
   echo -n "'${object}': '${flags}' in '${dir}'. "
   do_compile "${dir}" "${object}"
+}
+
+# compile a directory
+do_compile() { # $1:DIR $2:OBJECT $3:DONE
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local done="${3:-0}"
+
+  # build systems
+  for build_system in ${g_build_systems[@]}; do
+    do_build_system "${build_system}" "${dir}" "${object}" \
+    && local done="1"
+  done
+
+  # never leave $g_watchroot
+  if [ "${dir}" != "${g_watchroot}" ]; then
+    # search parent dir for more build instructions
+    do_compile "$(dirname "${dir}")" "${object}" "${done}"
+
+  elif [ "${done}" == "0" ]; then
+    # hit $g_watchroot
+    echo "No build instructions found!"
+  fi
+}
+
+# use given BUILD_SYSTEM to process an OBJECT from a DIRectory
+do_build_system() { # $1:BUILD_SYSTEM $2:DIR $3:OBJECT
+  # extract params
+  local build_system="$1"
+  local dir="$2"
+  local object="$3"
+
+  # not done yet
+  local result=1
+
+  # get glob pattern for plugin
+  for glob in ${g_build_systems_glob[${build_system}]}; do
+    # match glob in directory
+    for file in "${dir}"/${glob}; do
+      # check file readability
+      if [ -r "${file}" ]; then
+        # actually call into build system
+        echo -n "Found '${file}': "
+        do_${build_system} "$(basename "${file}")" "${dir}" "${object}" \
+        && local result=0
+        echo ""
+      fi
+    done
+  done
+
+  return ${result}
 }

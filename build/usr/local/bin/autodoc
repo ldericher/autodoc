@@ -7,6 +7,7 @@
 g_bin="$(readlink -f "$(which "$0")")"
 g_lib=${g_bin/"bin"/"lib"}
 declare -a g_build_systems
+declare -A g_build_systems_glob
 
 #
 # load base program

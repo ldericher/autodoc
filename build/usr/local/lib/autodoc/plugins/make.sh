@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# plugin name
 g_build_systems+=(make)
 
+# build instruction file globs for this plugin
+g_build_systems_glob[make]="Makefile *.mk"
+
 # compile using bare make command
-do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
+do_make() { # $1:MAKEFILE $2:DIR $3:OBJECT
   # extract params
-  local dir="$1"
-  local makefile="$2"
+  local makefile="$1"
+  local dir="$2"
   local object="$3"
 
   # check Makefile 'source pattern'
@@ -34,22 +38,4 @@ do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   fi
 
   return 0
-}
-
-try_make() { # $1:DIR $2:OBJECT
-  # extract params
-  local dir="$1"
-  local object="$2"
-  local retval=1
-
-  for FILE in "${dir}"/Makefile "${dir}"/*.mk; do
-    if [ -r "${FILE}" ]; then
-      echo -n "Found '${FILE}': "
-      do_make "${dir}" "$(basename "${FILE}")" "${object}" \
-      && local retval=0
-      echo ""
-    fi
-  done
-
-  return ${retval}
 }
