@@ -93,7 +93,7 @@ You may combine build instruction systems to your liking.
 However, Makefiles must contain a SRCPAT annotation comment as follows, where `<regex>` is a source pattern as above.
 
 ```Makefile
-#@SRCPAT <regex>
+#%SRCPAT% <regex>
 ```
 
 If there are multiple SRCPAT annotations, the lowermost one will be used.

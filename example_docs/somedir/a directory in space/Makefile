@@ -1,4 +1,4 @@
-#@SRCPAT .*
+#%SRCPAT% .*
 
 .PHONY: all
 all:

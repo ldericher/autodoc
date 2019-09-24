@@ -11,10 +11,10 @@ do_make() { # $1:DIR $2:MAKEFILE $3:OBJECT
   local object="$3"
 
   # check Makefile 'source pattern'
-  local srcpat="$(grep -E "^#@SRCPAT" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#@SRCPAT\s+//")"
+  local srcpat="$(grep -E "^#%SRCPAT%" "${dir}/${makefile}" | tail -n 1 | sed -r "s/^#%SRCPAT%\s+//")"
 
   if [ -z "${srcpat}" ]; then
-    echo -n "Empty source pattern, check '#@SRCPAT' annotation! "
+    echo -n "Empty source pattern, check '#%SRCPAT%' annotation! "
     return 1
 
   elif [[ "${object}" =~ ${srcpat} ]]; then

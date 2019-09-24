@@ -1,4 +1,4 @@
-#@SRCPAT (file|\.tex)$
+#%SRCPAT% (file|\.tex)$
 
 .PHONY: all
 all: files.txt
