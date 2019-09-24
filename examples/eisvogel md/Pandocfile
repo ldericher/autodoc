@@ -1,0 +1,5 @@
+SRCPAT='\.md$'
+TARGET='pdf docx'
+FROM='markdown'
+TEMPLATE='eisvogel.tex'
+EXTRA='--listings'
