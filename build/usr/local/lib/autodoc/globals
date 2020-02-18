@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# $WATCHROOT (default: ".")
-g_watchroot="$(readlink -f "${1:-.}")"
