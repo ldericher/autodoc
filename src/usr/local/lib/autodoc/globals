@@ -9,7 +9,59 @@ declare -A g_build_systems_glob
 # map of annotation patterns for build systems
 declare -A g_build_systems_annotations
 
-# $WATCHROOT (default: ".")
-g_watchroot="$(readlink -f "${1:-.}")"
+# simple help page
+do_show_help() {
+  echo "Usage: ${0} [-h?bwv] [-r ROOT] [ROOT]"
+  echo
+  echo "Options:"
+  echo "    -h, -?      Show this help and exit"
+  echo "    -b          Build ROOT directory on startup"
+  echo "    -w          Keep watching ROOT directory for changes"
+  echo "    -v          Verbose output"
+  echo "    -r ROOT     Set ROOT directory"
+  echo
+  echo "ROOT directory can be set via '-r' argument or positionally."
+  echo "If ROOT directory is undefined, it defaults to the current working directory."
+  exit 0
+}
 
-echo -n "globals ... "
+# reset in case getopts has been used previously in the shell
+OPTIND=1
+
+# initialize variables
+g_build=0
+g_watch=0
+g_root=""
+
+while getopts "h?bwvr:" opt; do
+  case "$opt" in
+  h|\?) 
+    do_show_help
+    ;;
+  b)  
+    g_build=1
+    ;;
+  w)  
+    g_watch=1
+    ;;
+  v)  
+    g_verbose=1
+    ;;
+  r)  
+    g_root="${OPTARG}"
+    ;;
+  esac
+done
+
+# default to help
+[ ${g_build} -eq 0 ] && [ ${g_watch} -eq 0 ] && [ ${g_verbose} -eq 0 ] && do_show_help
+
+# shift off getopts parsed options
+shift $((OPTIND-1))
+[ "${1:-}" = "--" ] && shift
+
+# if g_root undefined by getopt, 
+[ -z "${g_root:-}" ] && g_root="$1"
+
+# get actual $ROOT directory (default: ".")
+g_root="$(readlink -f "${g_root:-.}")"

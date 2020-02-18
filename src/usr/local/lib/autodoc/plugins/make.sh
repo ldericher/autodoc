@@ -55,5 +55,3 @@ do_run_make() { # $DIR $MAKEFILE
 
   logline_append "Done."
 }
-
-echo -n "GNU Make plugin ... "

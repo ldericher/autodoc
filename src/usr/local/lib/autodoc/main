@@ -33,13 +33,13 @@ do_compile() { # $DIR $OBJECT $DONE
     && local done="1"
   done
 
-  # never leave $g_watchroot
-  if [ "${dir}" != "${g_watchroot}" ]; then
+  # never leave $g_root
+  if [ "${dir}" != "${g_root}" ]; then
     # search parent dir for more build instructions
     do_compile "$(dirname "${dir}")" "${object}" "${done}"
 
   elif [ "${done}" == "0" ]; then
-    # hit $g_watchroot
+    # hit $g_root
     logline_append "Not a source file."
   fi
 }
@@ -113,7 +113,7 @@ do_build_all() { #
     for glob in ${g_build_systems_glob[${build_system}]}; do
 
       # match each glob recursively
-      find "${g_watchroot}" -iname "${glob}" | \
+      find "${g_root}" -iname "${glob}" | \
       while read file; do
         if [ -r "${file}" ]; then
           # force call into build system
@@ -138,11 +138,9 @@ do_build_watch() { #
   inotifywait -mrq \
     -e create -e delete -e moved_to -e close_write \
     --format '%e %w%f' \
-    "${g_watchroot}" | \
+    "${g_root}" | \
   \
   while read NOTIFICATION; do
     do_handle_inotify ${NOTIFICATION}
   done
 }
-
-echo -n "main ... "

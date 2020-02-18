@@ -10,5 +10,3 @@ logline_flush() {
   echo "${g_logline}"
   g_logline=""
 }
-
-echo -n "logging ... "

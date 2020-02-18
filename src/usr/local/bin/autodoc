@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo -n "Loading '${0}': "
-
 #
 # hard globals
 #
@@ -21,13 +19,27 @@ for plugin in "${g_lib}/plugins/"*".sh"; do
   source "${plugin}"
 done
 
-echo "program parsed."
-
 #
 # MAIN
 #
-echo "Building everything in '${g_watchroot}'."
-do_build_all
 
-echo "Watching '${g_watchroot}'."
-do_build_watch
+# show debug info
+if [ ${g_verbose} -eq 1 ]; then
+  logline_append "Variables:"
+  logline_append "build:${g_build}"
+  logline_append "watch:${g_watch}"
+  logline_append "root:${g_root}"
+  logline_flush
+fi
+
+if [ ${g_build} -eq 1 ]; then
+  echo "Building everything in '${g_root}'."
+  do_build_all
+fi
+
+if [ ${g_watch} -eq 1 ]; then
+  echo "Watching '${g_root}'."
+  do_build_watch
+fi
+
+echo "Done."
