@@ -1,4 +1,15 @@
 #!/bin/bash
 
+# array of available build systems
+declare -a g_build_systems
+
+# map of file globs for build systems
+declare -A g_build_systems_glob
+
+# map of annotation patterns for build systems
+declare -A g_build_systems_annotations
+
 # $WATCHROOT (default: ".")
 g_watchroot="$(readlink -f "${1:-.}")"
+
+echo -n "globals ... "

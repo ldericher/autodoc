@@ -1,13 +1,13 @@
 #!/bin/bash
 
+echo -n "Loading '${0}': "
+
 #
 # hard globals
 #
 
 g_bin="$(readlink -f "$(which "$0")")"
 g_lib=${g_bin/"bin"/"lib"}
-declare -a g_build_systems
-declare -A g_build_systems_glob
 
 #
 # load base program
@@ -16,16 +16,19 @@ declare -A g_build_systems_glob
 source "${g_lib}/globals"
 source "${g_lib}/logging"
 source "${g_lib}/handle_inotify"
-
 for plugin in "${g_lib}/plugins/"*".sh"; do
   source "${plugin}"
 done
 
+echo "program parsed."
+
 #
 # MAIN
 #
+echo "Building everything in '${g_watchroot}'."
+do_build_all
 
-echo "Booting '${g_bin}' in '${g_watchroot}'."
+echo "Watching '${g_watchroot}'."
 # setup inotify:
 #   -mrq monitor, recursive, quiet
 #   -e events
