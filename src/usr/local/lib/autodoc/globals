@@ -31,6 +31,7 @@ OPTIND=1
 # initialize variables
 g_build=0
 g_watch=0
+g_verbose=0
 g_root=""
 
 while getopts "h?bwvr:" opt; do
