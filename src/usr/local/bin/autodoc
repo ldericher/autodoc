@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#
+# hard globals
+#
+
+g_bin="$(readlink -f "$(which "$0")")"
+g_lib=${g_bin/"bin"/"lib"}
+
+#
+# load base program
+#
+
+source "${g_lib}/globals"
+source "${g_lib}/logging"
+source "${g_lib}/main"
+
+for plugin in "${g_lib}/plugins/"*".sh"; do
+  source "${plugin}"
+done
+
+#
+# MAIN
+#
+
+# show debug info
+if [ ${g_verbose} -eq 1 ]; then
+  logline_append "Variables:"
+  logline_append "build:${g_build}"
+  logline_append "watch:${g_watch}"
+  logline_append "root:${g_root}"
+  logline_flush
+fi
+
+if [ ${g_build} -eq 1 ]; then
+  echo "Building everything in '${g_root}'."
+  do_build_all
+fi
+
+if [ ${g_watch} -eq 1 ]; then
+  echo "Watching '${g_root}'."
+  do_build_watch
+fi
+
+echo "Done."

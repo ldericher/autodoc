@@ -1,0 +1,146 @@
+#!/bin/bash
+
+# process an inotify event
+do_handle_inotify() { # $FLAGS $OBJECT
+  # extract params
+  local flags="$1"
+  shift 1
+  local dir="$(dirname "$*")"
+  local object="$(basename "$*")"
+
+  if [[ "${flags}" =~ "ISDIR" ]]; then
+    # object refers to directory
+    local dir="${dir}/${object}"
+    local object="."
+  fi
+
+  # start using toolchain
+  logline_append "'${object}': '${flags}' in '${dir}'."
+  do_compile "${dir}" "${object}"
+  logline_flush
+}
+
+# compile an OBJECT using build instructions found in DIRectory
+do_compile() { # $DIR $OBJECT $DONE
+  # extract params
+  local dir="$1"
+  local object="$2"
+  local done="${3:-0}"
+
+  # build systems
+  for build_system in ${g_build_systems[@]}; do
+    do_build_system "${dir}" "${build_system}" "${object}" \
+    && local done="1"
+  done
+
+  # never leave $g_root
+  if [ "${dir}" != "${g_root}" ]; then
+    # search parent dir for more build instructions
+    do_compile "$(dirname "${dir}")" "${object}" "${done}"
+
+  elif [ "${done}" == "0" ]; then
+    # hit $g_root
+    logline_append "Not a source file."
+  fi
+}
+
+# check if defined source pattern matches OBJECT
+do_check_srcpat() { # $DIR $BUILD_DESC $ANNOTATION $OBJECT
+  # extract params
+  local dir="$1"
+  local build_desc="$2"
+  local annotation="$3"
+  local object="$4"
+
+  # check 'source pattern'
+  local srcpat="$(grep -E "^${annotation}" "${dir}/${build_desc}" | tail -n 1 | sed -r "s/^${annotation}\s+//")"
+
+  if [ -z "${srcpat}" ]; then
+    # empty srcpat => fail
+    logline_append "Empty source pattern, check for '${annotation}' annotation!"
+    return 1
+
+  elif [ -z "${object}" ]; then
+    # empty object = "no specific object" => success
+    return 0
+
+  elif [[ "${object}" =~ ${srcpat} ]]; then
+    # nonempty object matches srcpat => success
+    return 0
+
+  else
+    # nonempty object does not match srcpat => fail
+    logline_append "SRCPAT '${srcpat}' mismatch."
+    return 1
+
+  fi
+}
+
+# use given BUILD_SYSTEM to process an OBJECT from a DIRectory
+do_build_system() { # $DIR $BUILD_SYSTEM $OBJECT
+  # extract params
+  local dir="$1"
+  local build_system="$2"
+  local object="$3"
+
+  # not done yet
+  local result=1
+
+  # get glob patterns for plugin
+  for glob in ${g_build_systems_glob[${build_system}]}; do
+    # match each glob in directory
+    for file in "${dir}"/${glob}; do
+      # check file readability
+      if [ -r "${file}" ]; then
+        # actually call into build system
+        logline_append "Found '${file}':"
+
+        local file="$(basename "${file}")"
+        do_${build_system} "${dir}" "${file}" "${object}" \
+        && local result=0
+      fi
+    done
+  done
+
+  return ${result}
+}
+
+# force build using all systems
+do_build_all() { #
+  # build systems
+  for build_system in ${g_build_systems[@]}; do
+    echo "Build system '${build_system}'."
+    for glob in ${g_build_systems_glob[${build_system}]}; do
+
+      # match each glob recursively
+      find "${g_root}" -iname "${glob}" | \
+      while read file; do
+        if [ -r "${file}" ]; then
+          # force call into build system
+          logline_append "Found '${file}':"
+          
+          local dir="$(dirname "${file}")"
+          local file="$(basename "${file}")"
+          do_${build_system}_all "${dir}" "$(basename "${file}")"
+
+          logline_flush
+        fi
+      done
+    done
+  done
+}
+
+do_build_watch() { #
+  # setup inotify:
+  #   -mrq monitor, recursive, quiet
+  #   -e events
+  #   --format %e eventlist csv, %w workdir, %f filename
+  inotifywait -mrq \
+    -e create -e delete -e moved_to -e close_write \
+    --format '%e %w%f' \
+    "${g_root}" | \
+  \
+  while read NOTIFICATION; do
+    do_handle_inotify ${NOTIFICATION}
+  done
+}

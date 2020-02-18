@@ -6,4 +6,4 @@ RUN apt-get update && apt-get -y install \
 
 COPY usr /usr
 
-CMD ["autodoc"]
+CMD ["autodoc", "-bw"]
