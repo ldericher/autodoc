@@ -1,8 +1,5 @@
 version: "2"
 
-volumes:
-  phyLinux-home:
-
 services:
   autodoc:
     restart: "no"
