@@ -1,5 +1,7 @@
 # autodoc
 
+[![Build Status](https://github.drone.yavook.de/api/badges/ldericher/autodoc/status.svg)](https://github.drone.yavook.de/ldericher/autodoc)
+
 [`autodoc`](https://github.com/ldericher/autodoc) is a simple [CI](https://en.wikipedia.org/wiki/Continuous_integration) system optimized for document creation.
 
 In general, any file-sharing solution -- preferably on top of `docker-compose` -- can be made into an automatic document distribution system by adding an `autodoc` instance.
