@@ -1,8 +1,9 @@
 FROM ldericher/pandocker:latest
 
-RUN apt-get update && apt-get -y install \
+RUN set -ex; \
+    apt-get update && apt-get -y install \
       inotify-tools \
-&&  rm -rf /var/lib/apt/lists/*
+    ; rm -rf /var/lib/apt/lists/*;
 
 COPY usr /usr
 
