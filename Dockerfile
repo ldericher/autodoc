@@ -8,6 +8,7 @@ RUN set -ex; \
       make \
     ;
 
-COPY usr /usr
+COPY src/usr /usr
 
-CMD ["autodoc", "-bw"]
+ENTRYPOINT ["autodoc"]
+CMD ["-bw"]
