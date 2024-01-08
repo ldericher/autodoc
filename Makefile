@@ -5,7 +5,7 @@ examples_flags = -v "$(shell pwd)/examples:/data" -u "$(shell id -u):$(shell id 
 
 .PHONY: default
 default:
-	$(info use other targets: image build watch clean)
+	$(info use other targets: image build watch shell clean)
 
 .PHONY: image
 image:
@@ -18,6 +18,10 @@ build: image
 .PHONY: watch
 watch: image
 	$(docker_run) $(examples_flags) $(image_tag)
+
+.PHONY: shell
+shell: image
+	$(docker_run) $(examples_flags) --entrypoint ash $(image_tag)
 
 .PHONY: clean
 clean:
