@@ -7,8 +7,6 @@ steps:
   image: plugins/docker
   settings:
     repo: ldericher/autodoc
-    context: src
-    dockerfile: src/Dockerfile
     auto_tag: true
     username:
       from_secret: DOCKER_USERNAME
