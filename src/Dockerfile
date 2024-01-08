@@ -1,9 +1,12 @@
-FROM ldericher/pandocker:latest
+FROM pandoc/extra:latest
 
 RUN set -ex; \
-    apt-get update && apt-get -y install \
+    \
+    apk add --no-cache \
+      bash \
       inotify-tools \
-    ; rm -rf /var/lib/apt/lists/*;
+      make \
+    ;
 
 COPY usr /usr
 
