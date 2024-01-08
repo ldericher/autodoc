@@ -1,7 +1,7 @@
 image_tag = ldericher/autodoc
 docker_build = docker build
 docker_run = docker run --rm -it
-examples_flags = -v "$(shell pwd)/examples:/data" -u "$(shell id -u):$(shell id -g)"
+examples_flags = -v "$(shell pwd)/examples:/docs" -u "$(shell id -u):$(shell id -g)"
 
 .PHONY: default
 default:

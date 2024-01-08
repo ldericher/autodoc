@@ -10,5 +10,6 @@ RUN set -ex; \
 
 COPY src/usr /usr
 
+WORKDIR /docs
 ENTRYPOINT ["autodoc"]
 CMD ["-bw"]

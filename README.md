@@ -8,7 +8,7 @@ In general, any file-sharing solution -- preferably on top of `docker-compose` -
 
 ## Quick Start Guide using Docker
 
-The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher/autodoc) is based on [pandocker](https://hub.docker.com/r/ldericher/pandocker) providing Ubuntu's TeXlive `LaTeX` and `pandoc` in a simple box.
+The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher/autodoc) is based on [pandoc/extra](https://hub.docker.com/r/pandoc/extra) providing TeXlive `LaTeX` and `pandoc` in a container.
 
 01. Install [Docker CE](https://docs.docker.com/install/)
 
@@ -18,7 +18,7 @@ The `autodoc` image [available on Docker Hub](https://hub.docker.com/r/ldericher
 
     ```bash
     docker run --rm -it \
-     --volume "${PWD}":/docs \
+     --volume "${PWD}:/docs" \
      --user "$(id -u):$(id -g)" \
      ldericher/autodoc
     ```
@@ -58,7 +58,6 @@ services:
       - documents:/opt/autodoc
 
   autodoc:
-    restart: always
     image: ldericher/autodoc
     user: "UID:GID"
     volumes:
