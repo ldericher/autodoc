@@ -4,6 +4,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
       bash \
+      ghostscript \
       inotify-tools \
       make \
     ;
