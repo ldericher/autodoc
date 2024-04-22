@@ -7,6 +7,12 @@ RUN set -ex; \
       ghostscript \
       inotify-tools \
       make \
+    ; \
+    \
+    tlmgr install \
+      kpfonts \
+      lastpage \
+      latexmk \
     ;
 
 COPY src/usr /usr
