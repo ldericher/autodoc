@@ -27,6 +27,16 @@ FROM stage-base AS stage-diagrams
 RUN set -ex; \
     \
     apt-get update; apt-get install -y \
+      libasound2t64 \
+      libatk1.0-0t64 \
+      libatk-bridge2.0-0t64 \
+      libgbm1 \
+      libnss3 \
+      libxcomposite1 \
+      libxdamage1 \
+      libxfixes3 \
+      libxkbcommon0 \
+      libxrandr2 \
       npm \
     ; rm -rf /var/lib/apt/lists/*; \
     \
