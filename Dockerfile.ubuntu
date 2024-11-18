@@ -1,0 +1,38 @@
+FROM pandoc/extra:latest-ubuntu AS stage-base
+
+RUN set -ex; \
+    \
+    deluser --remove-home ubuntu; \
+    \
+    apt-get update; apt-get install -y \
+      ghostscript \
+      inotify-tools \
+      make \
+    ; rm -rf /var/lib/apt/lists/*; \
+    \
+    tlmgr install \
+      kpfonts \
+      lastpage \
+      latexmk \
+    ;
+
+COPY src/usr /usr
+
+WORKDIR /docs
+ENTRYPOINT ["autodoc"]
+CMD ["-bw"]
+
+FROM stage-base AS stage-diagrams
+
+RUN set -ex; \
+    \
+    apt-get update; apt-get install -y \
+      npm \
+    ; rm -rf /var/lib/apt/lists/*; \
+    \
+    npm install --global @mermaid-js/mermaid-cli; \
+    \
+    wget \
+      --output-document='/usr/local/share/pandoc/filters/diagram.lua' \
+      'https://raw.githubusercontent.com/pandoc-ext/diagram/refs/heads/main/_extensions/diagram/diagram.lua' \
+    ;
