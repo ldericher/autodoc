@@ -4,7 +4,7 @@ RUN set -ex; \
     \
     deluser --remove-home ubuntu; \
     \
-    apt-get update; apt-get install -y \
+    apt-get update; apt-get install --no-install-recommends --yes \
       ghostscript \
       inotify-tools \
       make \
@@ -22,11 +22,15 @@ WORKDIR /docs
 ENTRYPOINT ["autodoc"]
 CMD ["-bw"]
 
-FROM stage-base AS stage-diagrams
+FROM stage-base AS stage-diagram
+
+ENV PUPPETEER_CACHE_DIR="/usr/local/share/puppeteer/cache"
+
+COPY src/diagram.lua.patch /usr/local/src/autodoc/diagram.lua.patch
 
 RUN set -ex; \
     \
-    apt-get update; apt-get install -y \
+    apt-get update; apt-get install --no-install-recommends --yes \
       libasound2t64 \
       libatk1.0-0t64 \
       libatk-bridge2.0-0t64 \
@@ -38,6 +42,7 @@ RUN set -ex; \
       libxkbcommon0 \
       libxrandr2 \
       npm \
+      patch \
     ; rm -rf /var/lib/apt/lists/*; \
     \
     npm install --global @mermaid-js/mermaid-cli; \
@@ -45,4 +50,6 @@ RUN set -ex; \
     wget \
       --output-document='/usr/local/share/pandoc/filters/diagram.lua' \
       'https://raw.githubusercontent.com/pandoc-ext/diagram/refs/heads/main/_extensions/diagram/diagram.lua' \
-    ;
+    ; \
+    patch /usr/local/share/pandoc/filters/diagram.lua < /usr/local/src/autodoc/diagram.lua.patch; \
+    rm /usr/local/src/autodoc/diagram.lua.patch;
