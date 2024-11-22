@@ -32,4 +32,4 @@ steps:
   image: alpine
   depends_on:
     - default
-    - diagrams
+    - diagram
