@@ -13,6 +13,7 @@ RUN set -ex; \
       kpfonts \
       lastpage \
       latexmk \
+      twemojis \
     ;
 
 COPY src/usr /usr
