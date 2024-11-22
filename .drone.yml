@@ -3,12 +3,33 @@ kind: pipeline
 name: default
 
 steps:
-- name: docker
+- name: default
   image: plugins/docker
   settings:
     repo: ldericher/autodoc
-    auto_tag: true
     username:
       from_secret: DOCKER_USERNAME
     password:
       from_secret: DOCKER_PASSWORD
+    auto_tag: true
+    dockerfile: Dockerfile.alpine
+    target: stage-base
+
+- name: diagram
+  image: plugins/docker
+  settings:
+    repo: ldericher/autodoc
+    username:
+      from_secret: DOCKER_USERNAME
+    password:
+      from_secret: DOCKER_PASSWORD
+    auto_tag: true
+    auto_tag_suffix: -diagram
+    dockerfile: Dockerfile.ubuntu
+    target: stage-diagram
+  
+- name: parallelism provider
+  image: alpine
+  depends_on:
+    - default
+    - diagrams
