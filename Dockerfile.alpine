@@ -1,0 +1,48 @@
+FROM pandoc/extra:latest AS stage-base
+
+RUN set -ex; \
+    \
+    apk add --no-cache \
+      bash \
+      ghostscript \
+      inotify-tools \
+      make \
+    ; \
+    \
+    tlmgr install \
+      kpfonts \
+      lastpage \
+      latexmk \
+    ;
+
+COPY src/usr /usr
+
+WORKDIR /docs
+ENTRYPOINT ["autodoc"]
+CMD ["-bw"]
+
+FROM stage-base AS stage-diagram
+
+ENV PUPPETEER_CACHE_DIR="/usr/local/share/puppeteer/cache" \
+    PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+
+COPY src/diagram.lua.patch /usr/local/src/autodoc/diagram.lua.patch
+
+RUN set -ex; \
+    \
+    apk add --no-cache \
+      chromium \
+      npm \
+      patch \
+    ; \
+    \
+    npm install --global @mermaid-js/mermaid-cli; \
+    # rm -rf /root/.cache/puppeteer; \
+    \
+    wget \
+      --output-document='/usr/local/share/pandoc/filters/diagram.lua' \
+      'https://raw.githubusercontent.com/pandoc-ext/diagram/refs/heads/main/_extensions/diagram/diagram.lua' \
+    ; \
+    patch /usr/local/share/pandoc/filters/diagram.lua < /usr/local/src/autodoc/diagram.lua.patch; \
+    rm /usr/local/src/autodoc/diagram.lua.patch;
