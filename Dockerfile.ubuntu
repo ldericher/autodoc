@@ -10,6 +10,8 @@ RUN set -ex; \
       make \
     ; rm -rf /var/lib/apt/lists/*; \
     \
+    tlmgr update --self; \
+    \
     tlmgr install \
       kpfonts \
       lastpage \
