@@ -9,6 +9,8 @@ RUN set -ex; \
       make \
     ; \
     \
+    tlmgr update --self; \
+    \
     tlmgr install \
       kpfonts \
       lastpage \
