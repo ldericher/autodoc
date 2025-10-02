@@ -8,6 +8,7 @@ RUN set -ex; \
       ghostscript \
       inotify-tools \
       make \
+      patch \
     ; rm -rf /var/lib/apt/lists/*; \
     \
     tlmgr update --self; \
@@ -20,6 +21,12 @@ RUN set -ex; \
     ;
 
 COPY src/usr /usr
+
+RUN set -ex; \
+    \
+    cp /usr/share/ghostscript/10.02.1/lib/PDFA_def.ps /usr/local/share/autodoc/; \
+    patch -d /usr/local/share/autodoc < /usr/local/share/autodoc/PDFA_def.ps.patch; \
+    rm /usr/local/share/autodoc/PDFA_def.ps.patch;
 
 WORKDIR /docs
 ENTRYPOINT ["autodoc"]
@@ -45,7 +52,6 @@ RUN set -ex; \
       libxkbcommon0 \
       libxrandr2 \
       npm \
-      patch \
     ; rm -rf /var/lib/apt/lists/*; \
     \
     npm install --global @mermaid-js/mermaid-cli; \

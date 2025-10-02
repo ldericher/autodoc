@@ -1,5 +1,5 @@
---- diagram.lua	2024-11-18 23:55:02.673989033 +0100
-+++ diagram.patched.lua	2024-11-19 00:10:14.359878550 +0100
+--- diagram.lua
++++ diagram.lua
 @@ -158,7 +158,7 @@
          write_file(infile, code)
          pipe(
