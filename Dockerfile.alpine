@@ -7,6 +7,7 @@ RUN set -ex; \
       ghostscript \
       inotify-tools \
       make \
+      patch \
     ; \
     \
     tlmgr update --self; \
@@ -19,6 +20,12 @@ RUN set -ex; \
     ;
 
 COPY src/usr /usr
+
+RUN set -ex; \
+    \
+    cp /usr/share/ghostscript/lib/PDFA_def.ps /usr/local/share/autodoc/; \
+    patch -d /usr/local/share/autodoc < /usr/local/share/autodoc/PDFA_def.ps.patch; \
+    rm /usr/local/share/autodoc/PDFA_def.ps.patch;
 
 WORKDIR /docs
 ENTRYPOINT ["autodoc"]
@@ -37,7 +44,6 @@ RUN set -ex; \
     apk add --no-cache \
       chromium \
       npm \
-      patch \
     ; \
     \
     npm install --global @mermaid-js/mermaid-cli; \
