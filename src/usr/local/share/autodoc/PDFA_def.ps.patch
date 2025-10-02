@@ -5,7 +5,7 @@
  
  % Define an ICC profile :
 -/ICCProfile (srgb.icc) % Customise
-+/ICCProfile (/usr/local/share/autodoc/compatibleWithAdobeRGB1998.icc) % Customise
++/ICCProfile (/usr/local/share/autodoc/sRGB.icc) % Customise
  def
  
  [/_objdef {icc_PDFA} /type /stream /OBJ pdfmark
