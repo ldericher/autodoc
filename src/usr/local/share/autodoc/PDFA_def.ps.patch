@@ -1,0 +1,11 @@
+--- PDFA_def.ps
++++ PDFA_def.ps
+@@ -9,7 +9,7 @@
+   /DOCINFO pdfmark
+ 
+ % Define an ICC profile :
+-/ICCProfile (srgb.icc) % Customise
++/ICCProfile (/usr/local/share/autodoc/compatibleWithAdobeRGB1998.icc) % Customise
+ def
+ 
+ [/_objdef {icc_PDFA} /type /stream /OBJ pdfmark
