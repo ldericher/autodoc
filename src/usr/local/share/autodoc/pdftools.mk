@@ -26,7 +26,7 @@ pdftools_mkpdfa = gs \
 	-dPDFACompatibilityPolicy=1 \
 	--permit-file-read=/usr/local/share/autodoc/ \
 	-sOutputFile=$(3) \
-	/opt/pdfa/PDFA_def.ps \
+	/usr/local/share/autodoc/PDFA_def.ps \
 	$(2)
 
 ############
@@ -35,12 +35,12 @@ pdftools_mkpdfa = gs \
 
 # convert PDF to PDF/A-2B
 %_pdfa2.pdf: %.pdf
-	$(call convert_pdfa,2,$<,$@)
+	$(call pdftools_mkpdfa,2,$<,$@)
 
 # convert PDF to PDF/A-3B
 %_pdfa3.pdf: %.pdf
-	$(call convert_pdfa,3,$<,$@)
+	$(call pdftools_mkpdfa,3,$<,$@)
 
 # convert PDF to PDF/A (default variant 3B)
 %_pdfa.pdf: %.pdf
-	$(call convert_pdfa,3,$<,$@)
+	$(call pdftools_mkpdfa,3,$<,$@)
