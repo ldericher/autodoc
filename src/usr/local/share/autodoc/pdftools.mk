@@ -89,6 +89,9 @@ pdftools_md2pdfa = $(call pdftools_md2pdf,$(1),$(2),-) | $(call pdftools_pdfapip
 # shorthands based on automatic Make variables
 pdftools_pdfcat_auto = $(call pdftools_pdfcat,$^,$@)
 pdftools_mkpdfa_auto = $(call pdftools_mkpdfa,$^,$@)
+
+# params:
+#   1. pandoc template
 pdftools_md2tex_auto = $(call pdftools_md2tex,$<,$(1),$@)
 pdftools_md2pdf_auto = $(call pdftools_md2pdf,$<,$(1),$@)
 pdftools_md2pdfa_auto = $(call pdftools_md2pdfa,$<,$(1),$@)
